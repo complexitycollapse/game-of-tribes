@@ -102,33 +102,34 @@ function defectFn() {
   };
 }
 
-function inGroup() {
-  return {
-    affiliation: "in-group",
+function inGroup(tribe) {
+  return () => ({
+    affiliation: tribe,
     move: (self, opponent) => opponent.affiliation === self.affiliation ? "cooperate" : "defect"
-  }
+  });
 }
 
 function outGroup() {
   return {
     affiliation: "out-group",
     move: (self, opponent) => opponent.affiliation === self.affiliation ? "defect" : "cooperate"
-  }
+  };
 }
 
 function titForTat() {
   return {
     affiliation: "tit-for-tat",
     move: (self, opponent, history) => history.length > 0 ? history[0] : "cooperate"
-  }
+  };
 }
 
 const scenario = {
   rounds: 10000,
   botConfig: [
     { botFn: cooperateFn, instances: 10 },
-    { botFn: defectFn, instances: 100 },
-    { botFn: inGroup, instances: 1 },
+    { botFn: defectFn, instances: 10 },
+    { botFn: inGroup("A"), instances: 10 },
+    { botFn: inGroup("B"), instances: 10 },
     { botFn: outGroup, instances: 10 },
     { botFn: titForTat, instances: 10 }
   ]
