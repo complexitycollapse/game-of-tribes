@@ -99,14 +99,14 @@ function defectFn() {
   };
 }
 
-function inGroup(tribe) {
+function war(tribe) {
   return () => ({
     affiliation: tribe,
     move: (self, opponent) => opponent.affiliation === self.affiliation ? "cooperate" : "defect"
   });
 }
 
-function outGroup() {
+function betrayal() {
   return {
     affiliation: "out-group",
     move: (self, opponent) => opponent.affiliation === self.affiliation ? "defect" : "cooperate"
@@ -125,9 +125,9 @@ const scenario = {
   botConfig: [
     { botFn: cooperateFn, instances: 10 },
     { botFn: defectFn, instances: 10 },
-    { botFn: inGroup("A"), instances: 10 },
-    { botFn: inGroup("B"), instances: 10 },
-    { botFn: outGroup, instances: 10 },
+    { botFn: war("A"), instances: 10 },
+    { botFn: war("B"), instances: 10 },
+    { botFn: betrayal, instances: 10 },
     { botFn: titForTat, instances: 10 }
   ]
 }
