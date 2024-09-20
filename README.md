@@ -1,4 +1,4 @@
-# Group Strategy Simulation
+# Game of Tribes
 
 This is a simulator for the iterated prisoner's dilemma game. What makes it different is that rather than having many bots trying to win the game as individuals, they are instead divided into "tribes", and the goal is to maximize the total score of the tribe rather than the individual.
 
