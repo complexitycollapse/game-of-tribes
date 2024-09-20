@@ -1,3 +1,8 @@
+const payoffMatrix = [
+  [[1, 1], [-1, 2]],
+  [[2, -1], [0, 0]]
+];
+
 function randInt(limit) {
   return Math.floor(Math.random() * limit);
 }
@@ -30,19 +35,11 @@ function runRound(bots, histories) {
     throw Error(`Bot with affiliation ${second.affiliation} played ${secondMove}`);
   }
 
-  if (firstMove === "cooperate" && secondMove === "cooperate") {
-    first.score += 1;
-    second.score += 1;
-  } else if (firstMove === "cooperate" && secondMove === "defect") {
-    first.score += -1;
-    second.score += 2;
-  } else if (firstMove === "defect" && secondMove === "cooperate") {
-    first.score += 2;
-    second.score += -1;
-  } else if (firstMove === "defect" && secondMove === "defect") {
-    first.score += 0;
-    second.score += 0;
-  }
+  const firstAsInt = firstMove === "cooperate" ? 0 : 1;
+  const secondAsInt = secondMove === "cooperate" ? 0 : 1;
+
+  first.score += payoffMatrix[firstAsInt][secondAsInt][0];
+  second.score += payoffMatrix[firstAsInt][secondAsInt][1];
 
   historyOfSecond.unshift(secondMove);
   historyOfFirst.unshift(firstMove);
