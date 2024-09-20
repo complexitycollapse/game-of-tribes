@@ -106,11 +106,18 @@ function war(tribe) {
   });
 }
 
-function betrayal() {
-  return {
-    affiliation: "out-group",
+function betrayal(tribe) {
+  return () => ({
+    affiliation: tribe,
     move: (self, opponent) => opponent.affiliation === self.affiliation ? "defect" : "cooperate"
-  };
+  });
+}
+
+function traitor(tribe, colaboration) {
+  return () => ({
+    affiliation: tribe,
+    move: (self, opponent) => opponent.affiliation === colaboration ? "cooperate" : "defect"
+  });
 }
 
 function titForTat() {
@@ -121,28 +128,37 @@ function titForTat() {
 }
 
 const scenario = {
-  rounds: 10000,
+  rounds: 100000,
   botConfig: [
     { botFn: cooperateFn, instances: 10 },
     { botFn: defectFn, instances: 10 },
     { botFn: war("A"), instances: 10 },
     { botFn: war("B"), instances: 10 },
-    { botFn: betrayal, instances: 10 },
-    { botFn: titForTat, instances: 10 }
+    { botFn: betrayal("betrayal"), instances: 10 },
+    { botFn: titForTat, instances: 10 },
+    { botFn: betrayal("A"), instances: 1},
+    { botFn: traitor("A", "tit-for-tat"), instances: 3 }
   ]
-}
+};
 
 const result = playGame(scenario);
 
-const byAffiliation = new Map();
+const scoreByAffiliation = new Map();
+const countByAffiliation = new Map();
 
 result.forEach(bot => {
-  if (!byAffiliation.has(bot.affiliation)) {
-    byAffiliation.set(bot.affiliation, 0);
+  if (!scoreByAffiliation.has(bot.affiliation)) {
+    scoreByAffiliation.set(bot.affiliation, 0);
+    countByAffiliation.set(bot.affiliation, 0);
   }
 
-  byAffiliation.set(bot.affiliation, byAffiliation.get(bot.affiliation) + bot.score);
+  scoreByAffiliation.set(bot.affiliation, scoreByAffiliation.get(bot.affiliation) + bot.score);
+  countByAffiliation.set(bot.affiliation, countByAffiliation.get(bot.affiliation) + 1);
 });
 
-console.log(JSON.stringify([...byAffiliation.entries()].sort((a, b) => b[1] - a[1])));
-console.log("total score:", [...byAffiliation.values()].reduce((a, b) => a + b, 0));
+const averageScores = [...scoreByAffiliation.entries()]
+.map(([tribe, score]) => [tribe, score / countByAffiliation.get(tribe)])
+.sort((a, b) => b[1] - a[1]);
+
+console.log(JSON.stringify(averageScores));
+console.log("total score:", averageScores.reduce((a, b) => a + b[1], 0));
